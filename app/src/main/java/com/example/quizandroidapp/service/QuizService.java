@@ -26,10 +26,14 @@ public class QuizService implements Observable {
     private RequestQueue requestQueue;
     private HashSet<Observer> observers = new HashSet<>();
     private Context context;
+    private int currentQuestionNumber;
+    private int correctAnswers;
 
     public QuizService(Context context) {
-        requestQueue = Volley.newRequestQueue(context);
+        this.requestQueue = Volley.newRequestQueue(context);
         this.context = context;
+        this.currentQuestionNumber = 0;
+        this.correctAnswers = 0;
     }
 
     public void start() {
@@ -77,6 +81,22 @@ public class QuizService implements Observable {
         return result;
     }
 
+    public boolean quizFinished() {
+        return currentQuestionNumber >= 10;
+    }
+
+    public QuizQuestion getNextQuestion() {
+        if (currentQuestionNumber <= 10)
+            return questions.get(currentQuestionNumber);
+        return new QuizQuestion();
+    }
+
+    public void checkAnswer(boolean answer){
+        if(questions.get(currentQuestionNumber).isAnswer() == answer)
+            correctAnswers++;
+        currentQuestionNumber++;
+    }
+
     @Override
     public void attach(Observer observer) {
         if (!observers.contains(observer))
@@ -93,5 +113,13 @@ public class QuizService implements Observable {
     public void notifyObservers() {
         observers.stream()
                 .forEach(observer -> observer.update());
+    }
+
+    public boolean isCorrect(boolean answer) {
+        return questions.get(currentQuestionNumber).isAnswer() == answer;
+    }
+
+    public int getResult() {
+        return correctAnswers;
     }
 }

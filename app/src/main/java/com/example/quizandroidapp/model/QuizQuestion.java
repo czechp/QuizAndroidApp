@@ -12,6 +12,10 @@ public class QuizQuestion {
         this.answer = answer;
     }
 
+    public QuizQuestion() {
+
+    }
+
     public String getQuestion() {
         return question;
     }
